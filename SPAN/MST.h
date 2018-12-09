@@ -7,7 +7,8 @@
 class MST
 {
 public:
-	List vertexList; 
+	List<vertex> vertexList; 
+
 
 	MST();
 	void CreateVertex(char Key[1]); 
