@@ -32,14 +32,17 @@ public:
 			lastElement = firstElement;
 
 			numElements++; //increment number of elements 
+			this->isEmpty = false; 
 		}
 		else
 		{
 			//create new element and add it to last element in the list 
-			listElement *newElement = new listElement();
-			newElement->item = newItem;
-			newElement->indexNum = numElements;
-			lastElement = newElement; //set last element in list as the new element 
+			//listElement *newElement = new listElement();
+			listElement *Element = new listElement(); 
+			Element->item = newItem;
+			Element->indexNum = numElements;
+			lastElement->nextElement = Element; 
+			lastElement = Element; //set last element in list as the new element 
 
 			numElements++; //increment number of elements 
 		}
@@ -48,18 +51,16 @@ public:
 	//returns item at an index refrenced from the beginning -- 0 based
 	item* get(int index)
 	{
-		listElement *currentElement = firstElement; 
+		listElement *currentElement = firstElement;
 		if (firstElement != nullptr)
 		{
 			for (int i = 0; i <= index - 1; i++)
 			{
 				currentElement = currentElement->nextElement;
 			}
-			return currentElement->item; 
+			return currentElement->item;
 		}
 	}
-
-
 
 	//return if the list is empty 
 	bool is_empty()
