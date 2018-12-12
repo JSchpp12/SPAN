@@ -30,6 +30,9 @@
     <ClInclude Include="Container.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Set.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -39,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MST.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Set.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

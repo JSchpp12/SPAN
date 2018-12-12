@@ -7,11 +7,10 @@ public:
 	//this list can be used for storing all of the nodes, or all of the edges associated with a vertex 
 	struct listElement
 	{
-		int indexNum; 
-		item *item; 
-		listElement *nextElement = nullptr; 
+		int indexNum;
+		item *item;
+		listElement *nextElement = nullptr;
 	};
-
 	//constructor 
 	List()
 	{
@@ -51,14 +50,44 @@ public:
 	//returns item at an index refrenced from the beginning -- 0 based
 	item* get(int index)
 	{
-		listElement *currentElement = firstElement;
 		if (firstElement != nullptr)
 		{
+			listElement *currentElement = firstElement;
 			for (int i = 0; i <= index - 1; i++)
 			{
 				currentElement = currentElement->nextElement;
 			}
 			return currentElement->item;
+		}
+	}
+
+	//replace a list element's item with a new item
+	void replaceElementItem(int elementIndex, item *replacement)
+	{
+		listElement *targetElement; 
+		if (firstElement != nullptr)
+		{
+			targetElement = firstElement; //set the target element to the first element in the lsit 
+			for (int i = 0; i <= elementIndex - 1; i++)
+			{
+				targetElement = targetElement->nextElement; 
+			}
+			targetElement->item = replacement; //set the new item to the target element 
+		}
+	}
+
+
+	//get index of listElement that contains the item -- should be used when finding the set of a vertex
+	int getIndex(item *targetItem)
+	{
+		listElement *currentElement; 
+		if (firstElement != nullptr) 
+		{
+			currentElement = firstElement; 
+			if (currentElement->item == targetItem)
+			{
+				return currentElement->indexNum; 
+			}
 		}
 	}
 
@@ -74,10 +103,26 @@ public:
 		return numElements + 1; 
 	}
 
+	void deleteElement(int index)
+	{
+		listElement *lastElementBF; 
+		lastElementBF = firstElement; 
+		int i = 0; 
+		for (i; i <index; i++)
+		{
+			lastElementBF = lastElementBF->nextElement; 
+		}
+		for (int j = i + 1; j <= numElements - 1; j++)
+		{
+			lastElementBF->item = lastElementBF->nextElement->item;  //move the rest of the items down 1 index value to fill the hole
+			lastElementBF = lastElementBF->nextElement;
+		}
+		numElements = numElements - 1; 
+	}
+
 private: 
 	bool isEmpty;
-	int numElements; //will be 0 based like an array 
+	int numElements = 0; //will be 0 based like an array 
 	listElement *firstElement = nullptr; //use this for the first element in the list
 	listElement *lastElement = nullptr; //use this for quick insert, keep track of last element in list
 };
-
