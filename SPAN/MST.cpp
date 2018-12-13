@@ -149,8 +149,8 @@ void MST::Prim()
 
 void MST::PrimSetup()
 {
+	//save edge list for later use by the prim algorithm after the kruskal
 	primEdgeList = edgeList;
-
 }
 
 //create the set (list of list)
