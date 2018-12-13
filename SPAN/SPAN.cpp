@@ -1,5 +1,7 @@
-// SPAN.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+//SPAN.cpp
+//Jacob Schaupp
+//EECS 2510, Fall 2018
+//Contains main entry point for the program
 
 #include "pch.h"
 #include "MST.h"
@@ -20,6 +22,7 @@ int main(int argc, char *argv[])
 	if (!file)
 	{
 		std::cout << "Failed to Open File \n"; 
+		std::cin; 
 		exit(1); 
 	}
 	file >> numVertex;
@@ -44,5 +47,5 @@ int main(int argc, char *argv[])
 
 	spanningTrees.Kruskal(); 
 	spanningTrees.Prim(); 
-	exit(1); 
+	exit(0); 
 }

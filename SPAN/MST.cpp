@@ -1,3 +1,8 @@
+//MST.cpp
+//Jacob Schaupp
+//EECS 2510, Fall 2018
+//Contains logic for the Prim and Kruskal minimum spanning tree algorithms
+
 #include "pch.h"
 #include "MST.h"
 #include <iostream>
@@ -229,7 +234,6 @@ void MST::_union()
 	for (int i = 0; i < list2->num_element() - 1; i++)
 	{
 		list1->Add(list2->get(i));
-		//list2->deleteElement(i);
 	}
 	setList.deleteElement(index_list2);  
 }
@@ -237,8 +241,8 @@ void MST::_union()
 void MST::_totalWeight()
 {
 	List<edge> *sortedEdgeList = new List<edge>(); 
-
-	int weight = 0;
+	std::cout << "Kruskal - \n"; 
+	double weight = 0;
 
 	sortList(&edgeList); 
 	//edges that were chosen by kruskal will be set to true -- so check those elements 
@@ -307,7 +311,7 @@ edge* MST::getConnectingEdge(vertex *vert1, vertex *vert2)
 //used for prim -- calculate weight of tree
 void MST::calculateWeight()
 {
-	int weight = 0; 
+	double weight = 0; 
 	vertex *lastVert = nullptr; 
 	edge *chosenEdge = nullptr; 
 
