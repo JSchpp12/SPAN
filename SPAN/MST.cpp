@@ -16,7 +16,7 @@ void MST::CreateVertex(char key[1])
 }
 
 //add edges to each vertex 
-void MST::PopulateEdges(int vertexIndex1, int vertexIndex2, int edgeWeight)
+void MST::PopulateEdges(int vertexIndex1, int vertexIndex2, double edgeWeight)
 {
 	//index1 is row, index2 is column
 	if (!vertexList.is_empty())
@@ -53,6 +53,8 @@ void MST::PopulateEdges(int vertexIndex1, int vertexIndex2, int edgeWeight)
 //find the MST using Kruskal's Algorithm 
 void MST::Kruskal()
 {
+	//save edge list for prim 
+	PrimSetup(); 
 	//run through all of the edges in the edge list 
 	for (int i = 0; i < vertexList.num_element() - 1; i++)
 	{
@@ -65,13 +67,10 @@ void MST::Kruskal()
 	for (int j = 0; j < sortedEdgeList.num_element() - 1; j++)
 	{
 		edge *returnedEdge = sortedEdgeList.get(j); 
-		std::cout << "\n"; 
-		std::cout << "Looking at this edge::: " << returnedEdge->vertex1->key << " - " << returnedEdge->vertex2->key << "\n";
-		//check if the vertexes are contained in the same set
+		//check if the verticies are contained in the same set
 		if (find_set(returnedEdge->vertex1, returnedEdge->vertex2) == false)
 		{
 			//UNION the sets, since they are not in the same set 
-			std::cout << "Not in the same set \n"; 
 			sortedEdgeList.get(j)->chosen = true; //update edge bool value to tell program that it has chosen this edge
 			_union(); 
 
@@ -84,11 +83,72 @@ void MST::Kruskal()
 	_totalWeight(); 
 }
 
-MST::~MST()
+void MST::Prim()
 {
+	//reset edge list after kruskal 
+	edgeList = primEdgeList; 
+
+	//need to get the root vertex where we will start from 
+	//maybe just grab the first vertex in the list and use that as the root 
+	vertex *rootVert = vertexList.get(0); //get the first vertex in the list 
+	vertex *lastAdded = nullptr; //keep track of last vert added to tree
+	//populate que with all of the verticies 
+	for (int i = 0; i < vertexList.num_element() - 1; i++)
+	{
+		vertex *returnedVertex = vertexList.get(i); 
+		if (i != 0) returnedVertex->path_length = 11111; //set every vertex to INFINTY length other than the root
+		priorityHeap.Insert(returnedVertex); 
+	}
+
+	//since we start from the root, its pathLength has to be 0
+	rootVert->path_length = 0; 
+
+	//prim's algorithm runs until the que is empty 
+	while (priorityHeap.size() > 0)
+	{
+		//get minimum from heap 
+		vertex *currentVert = priorityHeap.get_min(true); //might need to remove this element from the list
+
+		for (int j = 0; j < edgeList.num_element() - 1; j++)
+		{
+			edge *certifiedEdge = nullptr;
+			List<vertex> adjacentVerts; //get all the adjacent verticies
+			//edge *retEdge = edgeList.get(j); 
+
+			getAdjacentVerts(&adjacentVerts, currentVert); //this will populate the adjacentVerts list with proper verticies
+
+			for (int k = 0; k < adjacentVerts.num_element() - 1; k++)
+			{
+				vertex *currentAdjVert = adjacentVerts.get(k); 
+
+				//get edge connecting current edge and the adjacent vertex -- is set to nullptr if there isn't one 
+				edge *connectingEdge = getConnectingEdge(currentVert, currentAdjVert); 
+				if (connectingEdge != nullptr)
+				{
+					//edge with smaller weight has been found -- REFRESH and set parent pointer so that path can be followed back to start later
+					if ((priorityHeap.contains(currentAdjVert)) && (connectingEdge->weight < currentAdjVert->path_length))
+					{
+						currentAdjVert->parent = currentVert;
+						currentAdjVert->path_length = connectingEdge->weight;
+						lastAdded = currentAdjVert;
+						certifiedEdge = connectingEdge; 
+					}
+				}
+			}
+			if (certifiedEdge != nullptr) primEdgeList.Add(certifiedEdge);
+		}
+	}
+	getPathBack(lastAdded); 
+	calculateWeight(); 
+}
+
+void MST::PrimSetup()
+{
+	primEdgeList = edgeList;
 
 }
 
+//create the set (list of list)
 void MST::make_set(vertex *passVertex)
 {
 	List<vertex> *tempVertexList = new List<vertex>(); 
@@ -134,13 +194,13 @@ bool MST::find_set(vertex *targetVertex1, vertex *targetVertex2)
 	{
 		found1 = found2 = false; //reset the bools for the next list element
 		
-		//grab the list of vertexes 
+		//grab the list of verticies 
 		List<vertex> *returnedListVertex = setList.get(i); 
 
 		//go through each of the elements contained within each list in the setList
 		for (int j = 0; j < returnedListVertex->num_element() - 1; j++)
 		{
-			//grab the vertex in the list, and check it's key with the keys of the two vertexes passed into this method, and see if they are the same
+			//grab the vertex in the list, and check it's key with the keys of the two verticies passed into this method, and see if they are the same
 			vertex *returnedVertex = returnedListVertex->get(j);
 			if (strcmp(returnedVertex->key, targetVertex1->key) == 0)
 			{
@@ -158,7 +218,7 @@ bool MST::find_set(vertex *targetVertex1, vertex *targetVertex2)
 	return false; 
 }
 
-//combine two sets of vertexes together into one 
+//combine two sets of verticies together into one 
 void MST::_union()
 {
 	//the two different sets are stored in the class variables index_list1 and 2
@@ -171,27 +231,34 @@ void MST::_union()
 		list1->Add(list2->get(i));
 		//list2->deleteElement(i);
 	}
-	setList.deleteElement(index_list2); 
-	//setList.replaceElementItem(index_list1, list1); //write updated
-
-	/*
-	if (list2->num_element() - 1 == 0)
-	{
-		//list2 is now empty, remove it from edge list
-		setList.deleteElement(index_list2);
-	}
-	*/ 
+	setList.deleteElement(index_list2);  
 }
 
 void MST::_totalWeight()
 {
+	List<edge> *sortedEdgeList = new List<edge>(); 
+
 	int weight = 0;
 
+	sortList(&edgeList); 
+	//edges that were chosen by kruskal will be set to true -- so check those elements 
 	for (int i = 0; i < edgeList.num_element() - 1; i++)
 	{
-		if (edgeList.get(i)->chosen == true) weight = weight + edgeList.get(i)->weight; 
+		if (edgeList.get(i)->chosen == true)
+		{
+			sortedEdgeList->Add(edgeList.get(i)); 
+			weight = weight + edgeList.get(i)->weight;
+		}
 	}
-	std::cout << "The total weight of the MST is: " << weight << "\n"; 
+	sortList(sortedEdgeList); 
+	std::cout << weight << "\n"; 
+	for (int j = 0; j < sortedEdgeList->num_element() - 1; j++)
+	{
+		edge *tempEdge = sortedEdgeList->get(j); 
+		std::cout << tempEdge->vertex1->key << "-" << tempEdge->vertex2->key << ": " << tempEdge->weight << "\n"; 
+	}
+
+	std::cout << "---------------------------------------------\n";
 }
 
 void MST::printList()
@@ -208,3 +275,196 @@ void MST::printList()
 		}
 	}
 }
+
+#pragma region PrimSupport
+void MST::getAdjacentVerts(List<vertex> *adjList, vertex *targetVertex)
+{
+	for (int i = 0; i < edgeList.num_element() - 1; i++)
+	{
+		//if an edge contains the target vertex, add other vertex to list of adjacent verts
+		edge *returnedEdge = edgeList.get(i); 
+		if (returnedEdge->vertex1 == targetVertex)adjList->Add(returnedEdge->vertex2); 
+		else if (returnedEdge->vertex2 == targetVertex) adjList->Add(returnedEdge->vertex1); 
+	}
+}
+
+edge* MST::getConnectingEdge(vertex *vert1, vertex *vert2)
+{
+	edge *connectingEdge = nullptr; 
+	for (int i = 0; i < edgeList.num_element() - 1; i++)
+	{
+		edge *returnedEdge = edgeList.get(i); 
+		if (((returnedEdge->vertex1 == vert1) && (returnedEdge->vertex2 == vert2)) || ((returnedEdge->vertex2 == vert1) && (returnedEdge->vertex1 == vert2)))
+		{
+			//this edge contains both vert1 and vert2 
+			connectingEdge = returnedEdge; 
+			return connectingEdge; 
+		}
+	}
+	return connectingEdge; 
+}
+
+//used for prim -- calculate weight of tree
+void MST::calculateWeight()
+{
+	int weight = 0; 
+	vertex *lastVert = nullptr; 
+	edge *chosenEdge = nullptr; 
+
+	for (int i = 0; i < vertexList.num_element() - 1; i++)
+	{
+		vertex *returnedVertex = vertexList.get(i); 
+		if (returnedVertex->path_length != 11111)
+		{
+			weight = weight + returnedVertex->path_length; 
+			//use total weight and the path_length of next vertex to get path chosen and use parent pointer 
+
+				
+			/*
+			if (lastVert != nullptr)
+			{
+				chosenEdge = getConnectingEdge(returnedVertex, lastVert); 
+				std::cout << chosenEdge->vertex1->key << " - " << chosenEdge->vertex2->key << ": " << chosenEdge->weight << "\n"; 
+			}
+			lastVert = returnedVertex;
+			*/ 
+		}
+	}
+	std::cout << "Weight of Tree by Prim: " << weight << "\n";
+}
+
+//find edges used back to root
+void MST::getPathBack(vertex *lastVertAdded)
+{
+	List<edge> edgesChosen; 
+
+	if (lastVertAdded == nullptr)
+	{
+		std::cout << "Empty \n"; 
+		return; 
+	}
+	vertex *currentFocus = lastVertAdded; 
+
+	while (currentFocus->parent != nullptr)
+	{
+		//get adj vertex 
+		List<vertex> *adjVerts = new List<vertex>(); 
+		List<edge> *childrenEdge = new List<edge>(); 
+
+		getAdjacentVerts(adjVerts, currentFocus); 
+
+		//check adjacent verts to see if their parents are this vertex 
+		for (int i = 0; i < adjVerts->num_element() - 1; i++)
+		{
+			vertex *tempVert = adjVerts->get(i);
+
+			//call the traverse method on each child to see if they are connected 
+			if (tempVert->parent == currentFocus)
+			{
+				edge *doubleCheck = getConnectingEdge(currentFocus, tempVert);
+				if (edgesChosen.contains(doubleCheck) == false)
+				{
+					edgesChosen.Add(doubleCheck);
+					childrenEdge = traverseChildren(tempVert); 
+				}
+
+				//check if the returned edge list is empty
+				if (childrenEdge->is_empty() == false)
+				{
+					//combine these lists
+					for (int j = 0; j < childrenEdge->num_element() - 1; j++)
+					{
+						edge *tempEdge = childrenEdge->get(j);
+						if (edgesChosen.contains(tempEdge) == false)
+						{
+							edgesChosen.Add(tempEdge);
+						}
+					}
+				}
+			}
+		}
+		//iterative method will sometimes add the parent path, so check if it is already in list before adding to prevent duplicates
+		edge *parentPath = getConnectingEdge(currentFocus, currentFocus->parent); 
+		if (!edgesChosen.contains(parentPath)) edgesChosen.Add(parentPath); 
+ 
+		currentFocus = currentFocus->parent; //move onto parent
+	}
+
+	//sort the list FIRST 
+	sortList(&edgesChosen); 
+
+	for (int j = 0; j < edgesChosen.num_element() - 1; j++)
+	{
+		//will need to sort these 
+		edge *edge = edgesChosen.get(j);
+		std::cout << edge->vertex1->key << "-" << edge->vertex2->key << ": " << edge->weight << "\n";
+	} 
+}
+
+List<edge>* MST::traverseChildren(vertex *target)
+{
+	List<vertex> *adjVerts = new List<vertex>(); 
+	List<edge> *chosenEdge = new List<edge>(); 
+
+	getAdjacentVerts(adjVerts, target); 
+	//while (target->parent != nullptr)
+		for (int i = 0; i < adjVerts->num_element() - 1; i++)
+		{
+			vertex *tempAdjVert = adjVerts->get(i);
+			if (tempAdjVert->parent == target)
+			{
+				chosenEdge->Add(getConnectingEdge(target, tempAdjVert)); //add edge between parent and child
+
+				List<edge> *returnedListEdge = new List<edge>(); 
+				returnedListEdge = traverseChildren(tempAdjVert); //traverse child looking for more edges 
+
+				if (returnedListEdge->is_empty() == false)
+				{
+					//combine the two lists together into one 
+					for (int j = 0; j < returnedListEdge->num_element() - 1; j++)
+					{
+						edge *newEdge = nullptr; 
+						if (j == 0) newEdge = returnedListEdge->getFirst(); 
+						else newEdge = returnedListEdge->get(i); 
+						chosenEdge->Add(newEdge); 
+					}
+				}
+			}
+		}
+		return chosenEdge; 
+}
+
+void MST::sortList(List<edge> *targetList)
+{
+	//go through each edge and ensure that the alphabetically lower edge is listed as vertex1 (BUBBLE SORT)
+	for (int m = 0 ; m < targetList->num_element() - 1; m++)
+	{
+		edge *tempEdge = targetList->get(m); 
+		if (strcmp(tempEdge->vertex1->key, tempEdge->vertex2->key) > 0)
+		{
+			//swap vertex1 with vertex2
+			vertex *tempVertexStorage = tempEdge->vertex1; 
+			tempEdge->vertex1 = tempEdge->vertex2; 
+			tempEdge->vertex2 = tempVertexStorage; 
+		}
+	}
+
+	for (int i = 0; i < targetList->num_element() - 1; i++)
+	{
+		for (int j = 0; j < targetList->num_element() - 2 - i; j++)
+		{
+			edge *comp1 = targetList->get(j); 
+			edge *comp2 = targetList->get(j + 1); 
+
+			vertex *Vcomp1 = comp1->vertex1; 
+			vertex *Vcomp2 = comp2->vertex1; 
+			if (strcmp(Vcomp1->key, Vcomp2->key) > 0)
+			{
+				//swap
+				targetList->replaceElementItem(j, comp2); 
+				targetList->replaceElementItem(j + 1, comp1); 
+			}
+		}
+	}
+}
+#pragma endregion

@@ -53,6 +53,7 @@ public:
 		if (firstElement != nullptr)
 		{
 			listElement *currentElement = firstElement;
+			//this was <= index -------------------- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! mIGHT BREAK SHIT
 			for (int i = 0; i <= index - 1; i++)
 			{
 				currentElement = currentElement->nextElement;
@@ -61,6 +62,24 @@ public:
 		}
 	}
 
+	//bugs with regular get, no time to correct logic 
+	item* newGet(int index)
+	{
+		listElement *currentElement = nullptr; 
+		if (firstElement != nullptr)
+		{
+			for (int i = 0; i < index; i++)
+			{
+				if (currentElement == nullptr) currentElement = firstElement; 
+				else currentElement = currentElement->nextElement; 
+			}
+		}
+	}
+
+	item* getFirst()
+	{
+		return firstElement->item; 
+	}
 	//replace a list element's item with a new item
 	void replaceElementItem(int elementIndex, item *replacement)
 	{
@@ -118,6 +137,22 @@ public:
 			lastElementBF = lastElementBF->nextElement;
 		}
 		numElements = numElements - 1; 
+	}
+
+	//returns true if list contains element
+	bool contains(item *target)
+	{
+		listElement *currentElement = nullptr; 
+		for (int i = 0; i < numElements; i++)
+		{
+			if (currentElement == nullptr) currentElement = firstElement; 
+			if (currentElement->item == target)
+			{
+				return true; 
+			}
+			currentElement = currentElement->nextElement; 
+		}
+		return false; 
 	}
 
 private: 

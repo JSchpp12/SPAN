@@ -30,7 +30,7 @@
     <ClInclude Include="Container.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Set.h">
+    <ClInclude Include="MinHeap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClCompile Include="MST.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Set.cpp">
+    <ClCompile Include="MinHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -38,7 +38,6 @@ int main()
 	}
 
 	spanningTrees.Kruskal(); 
-
-	std::cout << numVertex; 
-	return(0); 
+	spanningTrees.Prim(); 
+	exit(1); 
 }
