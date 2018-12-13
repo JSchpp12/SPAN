@@ -1,6 +1,7 @@
 //MST.cpp
 //Jacob Schaupp
 //EECS 2510, Fall 2018
+//12/13/2018
 //Contains logic for the Prim and Kruskal minimum spanning tree algorithms
 
 #include "pch.h"

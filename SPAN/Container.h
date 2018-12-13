@@ -1,6 +1,7 @@
 //Container.h
 //Jacob Schaupp
 //EECS 2510, Fall 2018
+//12/13/2018
 //Contains the edge and vertex structures
 
 #pragma once

@@ -1,6 +1,7 @@
 //MinHeap.cpp
 //Jacob Schaupp
 //EECS 2510, Fall 2018
+//12/13/2018
 //Contains logic for methods involved in the heap 
 
 #include "pch.h"

@@ -1,6 +1,7 @@
 //MST.h
 //Jacob Schaupp
 //EECS 2510, Fall 2018
+//12/13/2018
 //Contains header definitions and variables for the minimum spanning tree algorithms 
 
 #pragma once

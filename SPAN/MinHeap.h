@@ -1,6 +1,7 @@
 //MinHeap.h
 //Jacob Schaupp
 //EECS 2510, Fall 2018
+//12/13/2018
 //Contains header definitions for the heap structure
 
 #pragma once

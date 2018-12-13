@@ -1,6 +1,7 @@
 //SPAN.cpp
 //Jacob Schaupp
 //EECS 2510, Fall 2018
+//12/13/2018
 //Contains main entry point for the program
 
 #include "pch.h"
