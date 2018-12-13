@@ -140,7 +140,7 @@ void MST::Prim()
 					}
 				}
 			}
-			if (certifiedEdge != nullptr) primEdgeList.Add(certifiedEdge);
+			if (certifiedEdge != nullptr) primEdgeList.Add(certifiedEdge); //this is just for insurance in case the methods miss this path from parent to child
 		}
 	}
 	calculateWeight(); 
@@ -238,6 +238,7 @@ void MST::_union()
 	setList.deleteElement(index_list2);  
 }
 
+//calculate the total weight of the MST - Kruskal
 void MST::_totalWeight()
 {
 	List<edge> *sortedEdgeList = new List<edge>(); 
@@ -265,6 +266,7 @@ void MST::_totalWeight()
 	std::cout << "---------------------------------------------\n";
 }
 
+//Used for Debugging purposes
 void MST::printList()
 {
 	std::cout << "Printing lists \n"; 
@@ -281,6 +283,7 @@ void MST::printList()
 }
 
 #pragma region PrimSupport
+//will return all verticies that are connected to the targetVertex via an edge 
 void MST::getAdjacentVerts(List<vertex> *adjList, vertex *targetVertex)
 {
 	for (int i = 0; i < edgeList.num_element() - 1; i++)
@@ -292,12 +295,14 @@ void MST::getAdjacentVerts(List<vertex> *adjList, vertex *targetVertex)
 	}
 }
 
+//will return the edge object that connects the two verticies passed to this method, or wil return null if one is not found
 edge* MST::getConnectingEdge(vertex *vert1, vertex *vert2)
 {
 	edge *connectingEdge = nullptr; 
 	for (int i = 0; i < edgeList.num_element() - 1; i++)
 	{
 		edge *returnedEdge = edgeList.get(i); 
+		//perform the actual check if the verticies on the edge are the same as the ones passed to the method
 		if (((returnedEdge->vertex1 == vert1) && (returnedEdge->vertex2 == vert2)) || ((returnedEdge->vertex2 == vert1) && (returnedEdge->vertex1 == vert2)))
 		{
 			//this edge contains both vert1 and vert2 
@@ -308,7 +313,7 @@ edge* MST::getConnectingEdge(vertex *vert1, vertex *vert2)
 	return connectingEdge; 
 }
 
-//used for prim -- calculate weight of tree
+//used for prim -- calculate weight of minimum spanning tree
 void MST::calculateWeight()
 {
 	double weight = 0; 
@@ -327,7 +332,8 @@ void MST::calculateWeight()
 	std::cout << "Prim - \n" <<  weight << "\n";
 }
 
-//find edges used back to root
+
+//find edges used back to where it started, piece the MST edges together by following the parent pointers on the vertex structs
 void MST::getPathBack(vertex *lastVertAdded)
 {
 	List<edge> edgesChosen; 
@@ -355,10 +361,14 @@ void MST::getPathBack(vertex *lastVertAdded)
 			//call the traverse method on each child to see if they are connected 
 			if (tempVert->parent == currentFocus)
 			{
+				//check if the edge is already in the list - will prevent backtracking and running multiple parts of the graph more than once
 				edge *doubleCheck = getConnectingEdge(currentFocus, tempVert);
 				if (edgesChosen.contains(doubleCheck) == false)
 				{
+					//add the edge if it is not in the list
 					edgesChosen.Add(doubleCheck);
+
+					//Important: traverse the child vertex to see if there are any adjacent edges taken around that vertex -- wil return a list of edges that were taken around the object 
 					childrenEdge = traverseChildren(tempVert); 
 				}
 
@@ -401,13 +411,14 @@ List<edge>* MST::traverseChildren(vertex *target)
 	List<edge> *chosenEdge = new List<edge>(); 
 
 	getAdjacentVerts(adjVerts, target); 
-	//while (target->parent != nullptr)
-		for (int i = 0; i < adjVerts->num_element() - 1; i++)
+	//go through all the adjacent verticies to see if an edge was taken by Prim's algorithm 
+	for (int i = 0; i < adjVerts->num_element() - 1; i++)
 		{
 			vertex *tempAdjVert = adjVerts->get(i);
 			if (tempAdjVert->parent == target)
 			{
-				chosenEdge->Add(getConnectingEdge(target, tempAdjVert)); //add edge between parent and child
+				//this edge was taken so add it to the list that will be returned to calling method
+				chosenEdge->Add(getConnectingEdge(target, tempAdjVert)); 
 
 				List<edge> *returnedListEdge = new List<edge>(); 
 				returnedListEdge = traverseChildren(tempAdjVert); //traverse child looking for more edges 
