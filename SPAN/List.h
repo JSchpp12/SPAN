@@ -53,7 +53,6 @@ public:
 		if (firstElement != nullptr)
 		{
 			listElement *currentElement = firstElement;
-			//this was <= index -------------------- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! mIGHT BREAK SHIT
 			for (int i = 0; i <= index - 1; i++)
 			{
 				currentElement = currentElement->nextElement;

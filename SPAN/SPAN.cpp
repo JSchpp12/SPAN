@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
 	int numVertex = 0; 
 	int weight; 
 	char name[1]; 
-	char fileName[100]; 
 
 	file.open(argv[1], std::fstream::in | std::fstream::binary);
 	if (!file)
