@@ -242,7 +242,7 @@ void MST::_union()
 void MST::_totalWeight()
 {
 	List<edge> *sortedEdgeList = new List<edge>(); 
-	std::cout << "Kruskal - \n"; 
+	//std::cout << "Kruskal - \n"; 
 	double weight = 0;
 
 	sortList(&edgeList); 
@@ -329,7 +329,8 @@ void MST::calculateWeight()
 			//use total weight and the path_length of next vertex to get path chosen and use parent pointer 
 		}
 	}
-	std::cout << "Prim - \n" <<  weight << "\n";
+	//std::cout << "Prim - \n"; 
+	std::cout <<  weight << "\n";
 }
 
 
