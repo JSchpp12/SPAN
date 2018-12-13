@@ -36,6 +36,8 @@ private:
 	int index_list1 = 0; 
 	int index_list2 = 0; 
 
+	int primWeightDoubleCheck = 0; 
+
 	void make_set(vertex *passVertex); 
 	void sort_edge();
 	bool find_set(vertex *targetVertex1, vertex *targetVertex2); 

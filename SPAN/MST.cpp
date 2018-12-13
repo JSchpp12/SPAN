@@ -242,7 +242,7 @@ void MST::_union()
 void MST::_totalWeight()
 {
 	List<edge> *sortedEdgeList = new List<edge>(); 
-	//std::cout << "Kruskal - \n"; 
+	std::cout << "Kruskal - \n"; 
 	double weight = 0;
 
 	sortList(&edgeList); 
@@ -329,7 +329,7 @@ void MST::calculateWeight()
 			//use total weight and the path_length of next vertex to get path chosen and use parent pointer 
 		}
 	}
-	//std::cout << "Prim - \n"; 
+	std::cout << "Prim - \n"; 
 	std::cout <<  weight << "\n";
 }
 
@@ -395,13 +395,26 @@ void MST::getPathBack(vertex *lastVertAdded)
 		currentFocus = currentFocus->parent; //move onto parent
 	}
 
+	//missing a few edges -- just add them all again if they are not in the list already (quick fix)
+	for (int k = 0; k < vertexList.num_element() - 1; k++)
+	{
+		vertex *checkFocus = vertexList.get(k); 
+		edge *newEdge = getConnectingEdge(checkFocus, checkFocus->parent); 
+		
+		if ((edgesChosen.contains(newEdge) == false) && newEdge)
+		{
+			edgesChosen.Add(newEdge);
+		}
+	}
+
 	//sort the list FIRST 
 	sortList(&edgesChosen); 
 
+	double supposedWeight = 0; 
 	for (int j = 0; j < edgesChosen.num_element() - 1; j++)
 	{
 		//will need to sort these 
-		edge *edge = edgesChosen.get(j);
+		edge *edge = edgesChosen.get(j); 
 		std::cout << edge->vertex1->key << "-" << edge->vertex2->key << ": " << edge->weight << "\n";
 	} 
 }
