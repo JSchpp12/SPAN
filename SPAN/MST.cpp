@@ -138,8 +138,8 @@ void MST::Prim()
 			if (certifiedEdge != nullptr) primEdgeList.Add(certifiedEdge);
 		}
 	}
-	getPathBack(lastAdded); 
 	calculateWeight(); 
+	getPathBack(lastAdded);
 }
 
 void MST::PrimSetup()
@@ -318,19 +318,9 @@ void MST::calculateWeight()
 		{
 			weight = weight + returnedVertex->path_length; 
 			//use total weight and the path_length of next vertex to get path chosen and use parent pointer 
-
-				
-			/*
-			if (lastVert != nullptr)
-			{
-				chosenEdge = getConnectingEdge(returnedVertex, lastVert); 
-				std::cout << chosenEdge->vertex1->key << " - " << chosenEdge->vertex2->key << ": " << chosenEdge->weight << "\n"; 
-			}
-			lastVert = returnedVertex;
-			*/ 
 		}
 	}
-	std::cout << "Weight of Tree by Prim: " << weight << "\n";
+	std::cout << "Prim - \n" <<  weight << "\n";
 }
 
 //find edges used back to root

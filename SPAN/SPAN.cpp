@@ -5,8 +5,9 @@
 #include "MST.h"
 #include <iostream>
 #include <fstream>
+#include <string.h>
 
-int main()
+int main(int argc, char *argv[])
 {
 	MST spanningTrees; 
 
@@ -14,9 +15,14 @@ int main()
 	int numVertex = 0; 
 	int weight; 
 	char name[1]; 
+	char fileName[100]; 
 
-
-	file.open("Matrix.txt", std::fstream::in | std::fstream::binary);
+	file.open(argv[1], std::fstream::in | std::fstream::binary);
+	if (!file)
+	{
+		std::cout << "Failed to Open File \n"; 
+		exit(1); 
+	}
 	file >> numVertex;
 
 	//read in the names for each vertex 
